@@ -10,6 +10,7 @@ import (
 func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
+	e.Static("/static", "cmd/static")
 
 	api.RegisterUi(e)
 

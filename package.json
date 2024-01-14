@@ -1,0 +1,8 @@
+{
+  "name": "geth",
+  "devDependencies": {},
+  "peerDependencies": {},
+  "dependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}
