@@ -1,0 +1,21 @@
+package views
+
+templ Header() {
+	<p>Welcome to the todos list!</p>
+}
+
+templ Main() {
+	<div
+		class="text-blue-600 text-3xl font-bold italic"
+		hx-get="/todo/ui/header"
+		hx-trigger="load"
+		hx-swap="innerHTML"
+	></div>
+	<button
+		class="rounded-xl border border-blue-500 bg-blue-400 p-4"
+		hx-get="/todo/ui/list"
+		hx-swap="outerHTML"
+	>
+		Show todos
+	</button>
+}
