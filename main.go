@@ -18,6 +18,7 @@ func main() {
 
 	home.RegisterUi(e)
 	todo.RegisterUi(e)
+	todo.RegisterWeb(e)
 
 	e.Logger.Fatal(e.Start(":8000"))
 }
