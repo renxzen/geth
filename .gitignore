@@ -1,3 +1,4 @@
 *_templ.go
 tmp
 node_modules
+.env
