@@ -8,6 +8,7 @@ templ BaseHtml() {
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<link href="static/css/tailwind.css" rel="stylesheet"/>
 			<link href="static/css/styles.css" rel="stylesheet"/>
+			<script src="static/scripts/htmx.min.js"></script>
 			<title>THE GETH STACK</title>
 		</head>
 		<body>
@@ -20,6 +21,14 @@ templ Home() {
 	@BaseHtml() {
 		<div class="h-screen p-4 flex flex-col items-center justify-center">
 			<p class="text-2xl font-bold text-green-500">Hello world</p>
+			<button
+				class="rounded-xl border border-green-500 bg-green-400 p-4"
+				hx-get="/todo/ui"
+				hx-target="closest div"
+				hx-swap="outerHTML"
+			>
+				GO TO TODOS
+			</button>
 		</div>
 	}
 }
