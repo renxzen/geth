@@ -11,8 +11,6 @@ import (
 	"github.com/renxzen/geth/cmd/todo/views"
 )
 
-var global domain.GlobalState
-
 func RegisterUi(e *echo.Echo) {
 	r := e.Group("/todo/ui")
 
@@ -27,7 +25,12 @@ func RegisterUi(e *echo.Echo) {
 	})
 
 	r.GET("/list", func(c echo.Context) error {
-		component := views.List(global.Todos)
+		todos, err := domain.ListAll()
+		if err != nil {
+			return c.String(http.StatusInternalServerError, err.Error())
+		}
+
+		component := views.List(todos)
 		return component.Render(context.Background(), c.Response().Writer)
 	})
 
@@ -38,12 +41,14 @@ func RegisterUi(e *echo.Echo) {
 		}
 
 		todo := domain.Todo{
-			Id:        int64(len(global.Todos) + 1),
 			Content:   content,
 			Completed: false,
 		}
 
-		global.Todos = append(global.Todos, todo)
+		todo, err := domain.CreateTodo(todo)
+		if err != nil {
+			return c.String(http.StatusInternalServerError, err.Error())
+		}
 
 		component := views.Todo(todo)
 		return component.Render(context.Background(), c.Response().Writer)
@@ -56,15 +61,13 @@ func RegisterUi(e *echo.Echo) {
 			return c.String(http.StatusBadRequest, "Invalid id")
 		}
 
-		for idx := range global.Todos {
-			if global.Todos[idx].Id == int64(id) {
-				global.Todos[idx].Completed = !global.Todos[idx].Completed
-				component := views.Todo(global.Todos[idx])
-				return component.Render(context.Background(), c.Response().Writer)
-			}
+		todo, err := domain.ToggleCompletedById(int64(id))
+		if err != nil {
+			return c.String(http.StatusInternalServerError, err.Error())
 		}
 
-		return c.String(http.StatusBadRequest, "Todo not found")
+		component := views.Todo(todo)
+		return component.Render(context.Background(), c.Response().Writer)
 	})
 
 	r.DELETE("/:id", func(c echo.Context) error {
@@ -74,13 +77,11 @@ func RegisterUi(e *echo.Echo) {
 			return c.String(http.StatusBadRequest, "Invalid id")
 		}
 
-		for idx := range global.Todos {
-			if global.Todos[idx].Id == int64(id) {
-				global.Todos = append(global.Todos[:idx], global.Todos[idx+1:]...)
-				return c.NoContent(http.StatusNoContent)
-			}
+		err = domain.DeleteById(int64(id))
+		if err != nil {
+			return c.String(http.StatusInternalServerError, err.Error())
 		}
 
-		return c.String(http.StatusBadRequest, "Todo not found")
+		return c.NoContent(http.StatusNoContent)
 	})
 }

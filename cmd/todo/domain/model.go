@@ -5,7 +5,3 @@ type Todo struct {
 	Content   string `json:"content"`
 	Completed bool   `json:"completed"`
 }
-
-type GlobalState struct {
-	Todos []Todo
-}
