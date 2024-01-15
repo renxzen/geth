@@ -1,7 +1,58 @@
 package views
 
-templ List() {
-	<div>
-		List of todos coming soon...
+import (
+	"fmt"
+	"github.com/renxzen/geth/cmd/todo/domain"
+)
+
+templ Todo(todo domain.Todo) {
+	<div
+		id={ fmt.Sprintf("todo-%v", todo.Id) }
+		class="flex flex-row space-x-3"
+	>
+		<p class="flex-grow">
+			{ todo.Content }
+		</p>
+		<input
+			type="checkbox"
+			checked?={ todo.Completed }
+			hx-put={ fmt.Sprintf("/todo/ui/%v", todo.Id) }
+			hx-target="closest div"
+			hx-swap="outerHTML"
+		/>
+		<button
+			class="text-red-500 font-bold"
+			hx-delete={ fmt.Sprintf("/todo/ui/%v", todo.Id) }
+			_={ fmt.Sprintf("on htmx:afterRequest 1 remove #todo-%v", todo.Id) }
+		>
+			X
+		</button>
+	</div>
+}
+
+templ Form() {
+	<form
+		class="flex flex-row space-x-3"
+		hx-post="/todo/ui"
+		hx-swap="beforebegin"
+		_="on submit target.reset()"
+	>
+		<input
+			type="text"
+			name="content"
+			class="border border-black"
+		/>
+		<button type="submit">
+			Add
+		</button>
+	</form>
+}
+
+templ List(todos []domain.Todo) {
+	<div class="flex flex-col gap-4">
+		for _, todo := range todos {
+			@Todo(todo)
+		}
+		@Form()
 	</div>
 }
